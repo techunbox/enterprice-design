@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "product")
-public class Product implements Serializable{
+public class ProductEntity implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -21,10 +21,10 @@ public class Product implements Serializable{
 	@Column(name="product_price")
     protected double productPrice;
 	
-	public Product() {
+	public ProductEntity() {
 	}
 	
-	public Product(long productId, String productDescription, double productPrice) {
+	public ProductEntity(long productId, String productDescription, double productPrice) {
 		super();
 		this.productId = productId;
 		this.productDescription = productDescription;
@@ -77,7 +77,7 @@ public class Product implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Product other = (Product) obj;
+		ProductEntity other = (ProductEntity) obj;
 		if (productDescription == null) {
 			if (other.productDescription != null)
 				return false;
