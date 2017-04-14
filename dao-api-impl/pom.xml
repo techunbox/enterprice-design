@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>pro.techunbox</groupId>
-  <artifactId>dao-api</artifactId>
+  <artifactId>dao-api-impl</artifactId>
   <version>0.0.1</version>
   <packaging>jar</packaging>
 
-  <name>dao-api</name>
+  <name>dao-api-impl</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -23,12 +23,11 @@
     </dependency>
     <dependency>
     	<groupId>pro.techunbox</groupId>
-    	<artifactId>ecom-entity</artifactId>
+    	<artifactId>dao-api</artifactId>
     	<version>0.0.1</version>
     </dependency>
   </dependencies>
-  
-  <build>
+   <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
