@@ -1,8 +1,6 @@
 package pro.techunbox.entity.ecom;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,18 +13,18 @@ public class Product implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Column(name="product_id")
-    protected BigInteger productId;
+    protected long productId;
     
 	@Column(name="product_desc")
     protected String productDescription;
     
 	@Column(name="product_price")
-    protected BigDecimal productPrice;
+    protected double productPrice;
 	
 	public Product() {
 	}
 	
-	public Product(BigInteger productId, String productDescription, BigDecimal productPrice) {
+	public Product(long productId, String productDescription, double productPrice) {
 		super();
 		this.productId = productId;
 		this.productDescription = productDescription;
@@ -35,11 +33,11 @@ public class Product implements Serializable{
 
 
 
-	public BigInteger getProductId() {
+	public long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(BigInteger productId) {
+	public void setProductId(long productId) {
 		this.productId = productId;
 	}
 
@@ -51,11 +49,11 @@ public class Product implements Serializable{
 		this.productDescription = productDescription;
 	}
 
-	public BigDecimal getProductPrice() {
+	public double getProductPrice() {
 		return productPrice;
 	}
 
-	public void setProductPrice(BigDecimal productPrice) {
+	public void setProductPrice(double productPrice) {
 		this.productPrice = productPrice;
 	}
 
@@ -64,8 +62,10 @@ public class Product implements Serializable{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((productDescription == null) ? 0 : productDescription.hashCode());
-		result = prime * result + ((productId == null) ? 0 : productId.hashCode());
-		result = prime * result + ((productPrice == null) ? 0 : productPrice.hashCode());
+		result = prime * result + (int) (productId ^ (productId >>> 32));
+		long temp;
+		temp = Double.doubleToLongBits(productPrice);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
 
@@ -83,15 +83,9 @@ public class Product implements Serializable{
 				return false;
 		} else if (!productDescription.equals(other.productDescription))
 			return false;
-		if (productId == null) {
-			if (other.productId != null)
-				return false;
-		} else if (!productId.equals(other.productId))
+		if (productId != other.productId)
 			return false;
-		if (productPrice == null) {
-			if (other.productPrice != null)
-				return false;
-		} else if (!productPrice.equals(other.productPrice))
+		if (Double.doubleToLongBits(productPrice) != Double.doubleToLongBits(other.productPrice))
 			return false;
 		return true;
 	}
