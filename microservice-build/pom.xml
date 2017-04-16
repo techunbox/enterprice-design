@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+  <artifactId>microservice-build</artifactId>
+	<packaging>pom</packaging>
+
+	<name>microservice-build</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<parent>
+		<groupId>pro.techunbox</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+
+	<modules>
+		<module>../dao-api</module>
+		<module>../dao-api-impl</module>
+		<module>../domain-model</module>
+		<module>../ecom-entity</module>
+		<module>../parent</module>
+		<module>../repository-api</module>
+		<module>../webapp</module>
+	</modules>
+</project>

@@ -1,1 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<jpa:repositories base-package="pro.techunbox.repository.api" />
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${driver}" />
+		<property name="jdbcUrl" value="${server}" />
+		<property name="user" value="${user}" />
+		<property name="password" value="${passw}" />
+
+		<!-- these are C3P0 properties -->
+		<property name="acquireIncrement" value="${acquireIncrement}" />
+		<property name="minPoolSize" value="${minPoolSize}" />
+		<property name="maxPoolSize" value="${maxPoolSize}" />
+		<property name="maxIdleTime" value="${maxIdleTime}" />
+	</bean>
+	<bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+		p:dataSource-ref="dataSource" p:persistenceUnitName="ecom"
+		p:jpaVendorAdapter-ref="hibernateJpaVendorAdapter">
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+</beans>
