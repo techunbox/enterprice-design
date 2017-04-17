@@ -2,30 +2,223 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>microservice-build</artifactId>
+	<parent>
+		<groupId>pro.techunbox</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	
+	<artifactId>microservice-build</artifactId>
 	<packaging>pom</packaging>
-
 	<name>microservice-build</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<parent>
-		<groupId>pro.techunbox</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.0.1</version>
-	</parent>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+			    <artifactId>properties-maven-plugin</artifactId>
+			    <version>1.0.0</version>
+			    <executions>
+			    	<execution>
+			    		<phase>initialize</phase>
+			    		<goals><goal>read-project-properties</goal></goals>
+			    		<inherited>false</inherited>
+			    		<configuration>
+			    			<files>
+			    				<file>${application.path}/config.properties</file>
+			    			</files>
+			    		</configuration>
+			    	</execution>
+			    </executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<version>1.5</version>
+				<inherited>false</inherited>
+				<dependencies>
+					<!-- specify the dependent jdbc driver here -->
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.25</version>
+					</dependency>
+					<dependency>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+						<version>1.2</version>
+					</dependency>
+					
+				</dependencies>
+
+				<configuration>
+					<driver>${application.database.jdbc.driver}</driver>
+					<url>${application.database.url}</url>
+					<username>${application.database.user}</username>
+					<password>${application.database.password}</password>
+					<forceMojoExecution>${application.database.setup}</forceMojoExecution>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>drop-schema</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<printResultSet>true</printResultSet>
+							<orderFile>descending</orderFile>
+							<onError>continue</onError>
+							<fileset>
+								<basedir>db-setup/db/ddl/rollback/</basedir>
+								<includes>
+									<include>*.sql</include>
+								</includes>
+							</fileset>
+						</configuration>
+					</execution>
+					<execution>
+						<id>create-schema</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<printResultSet>true</printResultSet>
+							<orderFile>ascending</orderFile>
+							<fileset>
+								<basedir>db-setup/db/ddl/create/</basedir>
+								<includes>
+									<include>*.sql</include>
+								</includes>
+							</fileset>
+						</configuration>
+					</execution>
+					<execution>
+						<id>insert-seed-data</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<printResultSet>true</printResultSet>
+							<orderFile>ascending</orderFile>
+							<fileset>
+								<basedir>db-setup/db/seed-data/</basedir>
+								<includes>
+									<include>*.sql</include>
+								</includes>
+							</fileset>
+						</configuration>
+					</execution>
+					<execution>
+						<id>insert-test-data</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<printResultSet>true</printResultSet>
+							<orderFile>ascending</orderFile>
+							<fileset>
+								<basedir>db-setup/db/test-data/</basedir>
+								<includes>
+									<include>*.sql</include>
+								</includes>
+							</fileset>
+							<skip>${db.testdata.skip}</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-env-config</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy toDir="${basedir}/webapp/src/main/resources/properties/">
+									<fileset dir="${config.path}"/>
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>cleanup-properties-files</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete dir="${basedir}/webapp/src/main/resources/properties">
+								</delete>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<profiles>
+		<!-- Development environment profile -->
+		<profile>
+			<id>development</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<env_name>development</env_name>
+				<config.path>setup/environment-profile/development</config.path>
+				<db.setup>false</db.setup>
+				<db.testdata.skip>true</db.testdata.skip>
+			</properties>
+		</profile>
+		
+		<!-- UAT environment profile -->
+		<!-- <profile>
+			<id>uat</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<env_name>uat</env_name>
+				<config.path>setup/environment-profile/uat</config.path>
+				<db.setup>false</db.setup>
+				<db.testdata.skip>true</db.testdata.skip>
+			</properties>
+		</profile> -->
+		
+		<!-- Production environment profile -->
+		<!-- <profile>
+			<id>production</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<env_name>uat</env_name>
+				<config.path>setup/environment-profile/production</config.path>
+				<db.setup>false</db.setup>
+				<db.testdata.skip>true</db.testdata.skip>
+			</properties>
+		</profile> -->
+	</profiles>
 
 	<modules>
 		<module>../dao-api</module>

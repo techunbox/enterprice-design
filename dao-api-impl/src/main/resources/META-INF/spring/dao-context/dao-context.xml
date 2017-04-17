@@ -9,16 +9,16 @@
 	<jpa:repositories base-package="pro.techunbox.repository.api" />
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-		<property name="driverClass" value="${driver}" />
-		<property name="jdbcUrl" value="${server}" />
-		<property name="user" value="${user}" />
-		<property name="password" value="${passw}" />
+		<property name="driverClass" value="${application.database.jdbc.driver}" />
+		<property name="jdbcUrl" value="${application.database.url}" />
+		<property name="user" value="${application.database.user}" />
+		<property name="password" value="${application.database.password}" />
 
 		<!-- these are C3P0 properties -->
-		<property name="acquireIncrement" value="${acquireIncrement}" />
-		<property name="minPoolSize" value="${minPoolSize}" />
-		<property name="maxPoolSize" value="${maxPoolSize}" />
-		<property name="maxIdleTime" value="${maxIdleTime}" />
+		<property name="acquireIncrement" value="${application.databaes.pool.acquireIncrement}" />
+		<property name="minPoolSize" value="${application.databaes.pool.minPoolSize}" />
+		<property name="maxPoolSize" value="${application.databaes.pool.maxPoolSize}" />
+		<property name="maxIdleTime" value="${application.databaes.pool.maxIdleTimeExcessConnections}" />
 	</bean>
 	<bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
 
